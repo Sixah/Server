@@ -12,8 +12,8 @@ wget https://nginx.org/download/nginx-1.14.2.tar.gz
 tar zxvf nginx-1.14.2.tar.gz
 cd /usr/local/nginx-1.14.2
 
-# 查看依赖
-·/configure                                     # 可以添加后缀--prefix=/usr/local/nginx
+# 查看依赖 可以添加参数指定安装目录 默认为：--prefix=/usr/local/nginx
+·/configure                                     
 
 # 安装依赖
 yum install pcre pcre-devel zlib zlib-devel     # pcre是正则库，nginx重写url需要
