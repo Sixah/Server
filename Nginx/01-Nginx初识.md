@@ -75,3 +75,8 @@ kill -USR1 (PID)
 ```
 kill -HUP `cat logs/nginx.pid`
 ```
+注意：Nginx的命令虽然是以kill配合信号量来做，但是我们可以通过下面的命令查看Nginx真正的命令配置：
+```
+./sbin/nginx -h             # 查看命令帮助
+./sbin/nginx -t             # 查看配置文件书写是否正确
+```
