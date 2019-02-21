@@ -84,6 +84,9 @@ maxConns=100 #最大同时连接数  
 noauth=true #不启用验证  
 journal=true #每次写入会记录一条操作日志（通过journal可以重新构造出写入的数据）
 ```
+#### 2.5 注意
+mongodb默认端口是27018，如果没有设置数据目录，默认为/data/db  
+关闭命令：采用CTRL+C或者shutdownServer()命令或者kill -2 PID（-15也可以，但是-9会损坏数据）。
 
 ## 三 MongoDB基本使用
 #### 3.1 MongoDB的组成
