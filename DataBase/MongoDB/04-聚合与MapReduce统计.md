@@ -64,4 +64,29 @@ db.stu.aggregate([
     {$project:{_id:0,counter:1}}
 ])
 ```
-#### 1.4 
+## 二 MapReduce
+#### 2.1 MapReduce简介
+MapReduce相当于关系型数据库中的`group by`，使用MapReduce统计需要调用Map函数和Reduce函数，Map函数会调用emit(key,value)方法，此方法可以遍历集合中的所有记录，然后将key和value传递给reduce函数进行处理。MapReduce统计可以通过db.runCommand或者mapReduce命令执行，所以Map函数和Reduce函数可以使用JS来实现：
+```
+db.runCommand(
+    {
+        mapreduce: 目标集合名,
+        map:    map函数,                            //映射函数，生成键值对序列，作为reduce函数参数
+        reduce: reduce函数,                         //统计函数
+        query: query函数                            //可选，用于目标记录过滤
+        finalize: 最终处理函数
+    }
+);
+
+map函数：
+function(){
+    emit(this.uid, 1)
+}
+
+reduce函数
+function(k,v){
+    var x = 0;
+    v.forEach(function(){x += v});
+    return x;
+}
+```
