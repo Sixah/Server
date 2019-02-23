@@ -1,7 +1,6 @@
 ## 一 MongoDB简介
-MongoDB是一个面向集合、模式自由的文档型数据库。  
 MongoDB采用C++开发，是当前最火热的nosql数据库之一，可以在许多场合替代传统的关系型数据库。  
-MongoDB最大的特点是拥有可以媲美sql的查询语言，语法与面向对象的查询语法非常相似，可以实现关系型数据库单标查询的大部分功能，也支持对数据建立索引。  
+MongoDB是一个面向集合、模式自由的文档型数据库，Mongo存储的数据是以BSON为单位（二进制化的JSON），Mongo内置了JavaScript解释器，所以可以使用类似JS的面向对象查询语法，媲美SQL。    
 MongoDB主要特点如下：
 - 面向集合文档存储
 - 模式自由：一个集合可以存储一个键值对的文档，也可以存储多个键值对的文档
@@ -14,10 +13,10 @@ MongoDB使用场景：
 - 大数据、低价值数据的存储
 ## 二 MongoDB安装
 #### 2.1 win安装
-下载对应版本后下一步下一步即可，会默认指定data目录，log目录，也可以修改该目录位置。  
+下载对应版本后下一步下一步即可
 ```
 服务端启动（进入mogo的bin目录）：
-./mongod --dbpath="C:/DB/mongo"   
+./mongod             # --dbpath="C:/data"  该参数用于指定mongo数据的存放位置
 
 客户端连接：
 ./mongo
@@ -54,6 +53,10 @@ port=27017
 直接关闭：CTRL+C，不要关闭ssh窗口直接退出（会出错）
 后台启动关闭：在客户端使用 db.shutdownServer()
 
+以服务形式启动关闭：
+sudo service mongod start
+sudo service mongod stop
+
 
 如果是在阿里云安装后，外网需要连接还需要额外配置：
 1 阿里云开放27017端口
@@ -64,15 +67,13 @@ bind_ip:127.0.0.1,阿里云内网地址        # 这里或者直接输入0.0.0.0
 shell远程连接命令：
 mongo mydb --username user1  --host 192.168.99.100 --port 27017 --password
 
-常见的mongodb可视化工具有官方的Compass，以及robo3T。 
-
-以服务形式启动关闭：
-sudo service mongod start
-sudo service mongod stop
 ```
-
-
-#### 2.4 常见命令选项
+注意
+mongodb默认端口是27018，如果没有设置数据目录，默认为/data/db  
+关闭命令：采用CTRL+C或者shutdownServer()命令或者kill -2 PID（-15也可以，但是-9会损坏数据）。
+#### 2.4 GUI工具
+常见的mongodb可视化工具有官方的Compass，笔者推荐最新版的Navicat！
+#### 2.5 常见命令选项
 启动命令选项：
 ```
 port=27017 #端口  
@@ -84,9 +85,6 @@ maxConns=100 #最大同时连接数  
 noauth=true #不启用验证  
 journal=true #每次写入会记录一条操作日志（通过journal可以重新构造出写入的数据）
 ```
-#### 2.5 注意
-mongodb默认端口是27018，如果没有设置数据目录，默认为/data/db  
-关闭命令：采用CTRL+C或者shutdownServer()命令或者kill -2 PID（-15也可以，但是-9会损坏数据）。
 
 ## 三 MongoDB基本使用
 #### 3.1 MongoDB的组成
