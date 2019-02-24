@@ -37,22 +37,19 @@ cd /usr/local/nginx/sbin
 
 # 查看Nginx运行情况，如果服务器上配置了外网访问，此时可以在外网访问Nginx默认页面了
 ps aux|grep nginx                               # 此时可以看到Nginx拥有主进程和工作进程
+注意：Nginx的主进程（master）不负责处理网络请求，负责生成和管理多个子进程，子进程（work）用于处理网络请求。
 
-
-# 很可能会出现80端口被占用的情况，解决办法
+# 如果出现80端口被占用的情况，解决办法
 netstat -antp                                   # 查看系统端口占用情况
 kill -9 (PID)
 
-
 # 关闭Nginx
-kill -INT (PID)                                 # 此处PID为Nginx的master进程PID
+kill -INT PID                                   # 此处PID为Nginx的master进程PID
 ```
-Nginx的主进程（master）不负责处理网络请求，负责生成和管理多个子进程。  
-子进程（work）用于处理网络请求。  
 ## 五 信号量
 在关闭Nginx时，我们使用了-INT，还有其他的信号量：
 ```
-TERM,INT        快速关闭
+TERM或者INT     快速关闭
 QUIT            优雅的关闭进程（等请求结束后再关闭）
 HUP             重要！！！改变配置文件时用来，平滑的重读配置文件
 USR1            重读日志，在日志按月/日分割时使用
@@ -65,7 +62,7 @@ WINGCH          优雅关闭旧进程，配合USR2进行升级
 # 修改日志文件文件名等
 
 # 重读日志
-kill -USR1 (PID)
+kill -USR1 PID
 ```
 注意：每次都需要查找nginx的进程pid，其实nginx的pid存储在logs/nginx.pid中，所以上述的命令可以修改为类似如下：
 ```
