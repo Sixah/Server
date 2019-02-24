@@ -4,26 +4,22 @@
 #### 2.2 Linux安装
 CentOS安装：
 ```
+# 安装依赖
+yum install pcre pcre-devel zlib zlib-devel     # pcre是正则库，nginx重写url需要
+yum install openssl openssl-devel               # 如果使用了https，需要该库   
+
 # 下载
-cd /usr/local/src
 wget https://nginx.org/download/nginx-1.14.2.tar.gz
 
 # 解压
 tar zxvf nginx-1.14.2.tar.gz
 cd /usr/local/nginx-1.14.2
 
-# 查看依赖 可以添加参数指定安装目录 默认为：--prefix=/usr/local/nginx
-·/configure                                     
-
-# 安装依赖
-yum install pcre pcre-devel zlib zlib-devel     # pcre是正则库，nginx重写url需要
-yum install openssl openssl-devel               # 如果使用了https，需要该库              
+# 查看依赖，是否仍然有未安装的依赖
+./configure                                    
+           
 # 再次查看依赖，如果完毕，则编译Nginx
-make && make install
-
-# 查看安装结果
-cd /usr/local/
-ls                                              # 查看是否存在nginx
+make && make install                            # 默认安装在/usr/local下                            
 ```
 ## 三 Nginx文件目录
 在Nginx安装目录中，存在四个目录：
@@ -36,17 +32,17 @@ sbin    命令目录
 ## 四 Nginx启动与关闭
 ```
 # 启动
-cd /usr/local/nginx
-./sbin/nginx                                    # 需要关闭一些占用了80端口的应用
+cd /usr/local/nginx/sbin
+./nginx                                         # 需要关闭一些占用了80端口的应用
 
-# 解决端口被占用
+# 查看Nginx运行情况，如果服务器上配置了外网访问，此时可以在外网访问Nginx默认页面了
+ps aux|grep nginx                               # 此时可以看到Nginx拥有主进程和工作进程
+
+
+# 很可能会出现80端口被占用的情况，解决办法
 netstat -antp                                   # 查看系统端口占用情况
 kill -9 (PID)
 
-# 查看Nginx运行情况
-ps aux|grep nginx                               # 此时可以看到Nginx拥有主进程和工作进程
-
-# 如果服务器上配置了外网访问，此时可以在外网访问Nginx默认页面了
 
 # 关闭Nginx
 kill -INT (PID)                                 # 此处PID为Nginx的master进程PID
@@ -77,6 +73,6 @@ kill -HUP `cat logs/nginx.pid`
 ```
 注意：Nginx的命令虽然是以kill配合信号量来做，但是我们可以通过下面的命令查看Nginx真正的命令配置：
 ```
-./sbin/nginx -h             # 查看命令帮助
-./sbin/nginx -t             # 查看配置文件书写是否正确
+./nginx -h             # 查看命令帮助
+./nginx -t             # 查看配置文件书写是否正确
 ```
