@@ -1,7 +1,21 @@
 ## 一 Nginx介绍
+Nginx最初是为了设计成为一个HTTP服务器，用来解决C10K问题。  
+关于C10K:最初的服务器是基于进程/线程模型。新到来一个TCP连接，就需要分配一个进程。假如有C10K，就需要创建1W个进程，可想而知单机是无法承受的。
 ## 二 Nginx安装
 #### 2.1 win安装
-#### 2.2 Linux安装
+nginx的win安装包是绿色的，解压就可以直接使用：
+```
+start .\nginx.exe               # 启动后查看进程管理器中是否有nginx进程，或者访问127.0.0.1
+```
+但是有可能遇到无法启动问题，大多是因为80端口被占用，解决办法：  
+打开regedit，找到：HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\HTTP，找到REG_DWORD类型的项Start，将其改为0，重启电脑即可。
+常用命令：
+```
+nginx -s stop                   //停止nginx
+nginx -s reload                //重新加载nginx
+nginx -s quit                  //退出nginx
+```
+#### 2.2 Linux源码安装
 CentOS安装：
 ```
 # 安装依赖
