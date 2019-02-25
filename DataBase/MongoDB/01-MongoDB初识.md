@@ -14,13 +14,6 @@ MongoDB使用场景：
 ## 二 MongoDB安装
 #### 2.1 win安装
 下载对应版本后下一步下一步即可
-```
-服务端启动（进入mogo的bin目录）：
-./mongod             # --dbpath="C:/data"  该参数用于指定mongo数据的存放位置
-
-客户端连接：
-./mongo
-```
 #### 2.2 mac安装
 解压安装文件即可，启动方式同win
 #### 2.3 linx安装
@@ -37,8 +30,17 @@ mkdir -p /root/mongo/data           # 创建数据目录
 mkdir -p /root/mongo/logs           # 创建日志目录
 touch /root/mongo/logs/logs.log     # 创建日志文件
 chmod -R 777 /root/mongo/ 
+```
+#### 2.4 启动与连接
+```
+服务端启动（进入mogo的bin目录）
+./mongod                            # --dbpath="C:/data"  该参数用于指定mongo数据的存放位置
 
-启动命令，同win,推荐使用配置文件启动：
+客户端连接：
+./mongo
+```
+由于启动的可选配置属性太多，推荐使用配置文件启动，方便管理：
+```
 vim /etc/mongo.conf
 dbpath=/root/mongo/data/
 logpath=/root/mongo/logs/logs.log
