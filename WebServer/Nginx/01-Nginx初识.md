@@ -30,11 +30,39 @@ tar zxvf nginx-1.14.2.tar.gz
 cd /usr/local/nginx-1.14.2
 
 # 查看依赖，是否仍然有未安装的依赖
-./configure                                    
+./configure                                     # 此处可以选择添加安装可选项               
            
 # 再次查看依赖，如果完毕，则编译Nginx
-make && make install                            # 默认安装在/usr/local下                            
+make && make install                                                      
 ```
+常用的./configure时可选参数：
+| 配置可选项 | 可选项说明 |
+| ------ | ------ |
+| --prefix=`<path>` | nginx安装根路径，默认位于/usr/local |
+| --sbin- path=`<path>` | 指定nginx二进制文件路径，没有指定则依赖于prefix |
+| --conf- path=`<path>` | 指定配置文件位置 |
+| --error-log -path=`<path>` | 指定nginx错误文件写入目录 |
+| --pid- path=`<path>` | 指定的文件将会写入nginxmaster进程的pid，通常位于/var/run下 |
+| --lock- path=`<path>` | 共享存储器互斥锁文件的路径 |
+| --user=`<user>` | worker进程运行的用户 |
+| --group=`<group>` | worker进程运行的组 |
+| --with-file-aio | 为FreeBSD4.3+和Linux2.6.22+系统启动异步I/O |
+| --with-debug | 启用调试日志，生产环境不推荐 |
+#### 2.3 配置邮件代理安装
+推荐的邮件代理配置为：
+```
+./configure --with-mail --with-mail_ssl_module --with-openssl=${BUILD_DIR}/openssl-1.0.1p
+```
+常见邮件代理安装配置
+| 配置可选项 | 可选项说明 |
+| ------ | ------ |
+| --with-mail | 启用mail模块，该模块默认没有被激活 |
+| --with-mail_ssl_module | 启用ssl |
+| --without-mail_pop3_module | 启用mail模块后，单独禁用POP3模块 | 
+| --without-mail_imap_module | 启用mail模块后，单独禁用IMAP模块 |
+| --without-mail_smtp_module | 启用mail模块后，单独禁用SMTP模块 |
+| --without-http | 禁用http模块，只使用mail | 
+
 ## 三 Nginx文件目录
 在Nginx安装目录中，存在四个目录：
 ```
