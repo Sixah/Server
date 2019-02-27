@@ -77,57 +77,86 @@ server {
 }
 ```
 
-## 三 日志配置
 
-#### 3.1 日志基础配置
+## 三 location写法
 
-日志配置位于http下：
+#### 3.1 location简介
+
+location会根据uri进行不同的定位。语法可以分为三类：
+- location = patt {}    # 精准匹配
+- location patt {}      # 一般匹配
+- location  ~ patt {}   # 正则匹配
+
+匹配顺序：首先看有没有精准匹配，如果有，则立即解析，停止继续查找匹配，依次按照一般匹配，正则匹配类推。  
 
 ```
-    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-    #                  '$status $body_bytes_sent "$http_referer" '
-    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+# 精准匹配
+location = / {
+    root    /var/www/html1
+    index1.html
+}
 
-    #access_log  logs/access.log  main;
-```
-上述的`main`是日志记录形式的自定义名称，其中remote_addr是远程访问地址，后续依次是用户名，访问时间，请求方式（get/post等）等等。  
+# 一般匹配
+location /index.html {
+    root    /var/www/html2
+    index2.html
+}
 
-nginx允许针对不同的server做不同的日志处理：
-```
-server {
-    access_log logs/test.log main       # 在指定的server下添加，需要打开http配置下的main名称
+# 正则匹配
+location ~ image {
+    root    /var/www/image
+    index3.html
 }
 ```
 
-#### 3.2 日志切割
+## 三 rewrite 重写
 
-在日志目录下书写一个shell脚本：
+重写常用命令：
 ```
-vim runlog.sh
-
-# 内容容下，运行方式 ssh runlog.sh
-#!/bin/bash
-
-LOGPATH=/usr/local/nginx/logs/test.log
-
-## 一个月一个目录
-BASEPATH=$BASEPATH/$(date -d yesterday +%Y%m)
-
-mkdir -p $BASEPATH
-
-bak=$BASEPATH/$(date -d yesterdata +%Y%m$d%H%M).test.log
-
-mv $LOGPATH $bak
-
-touch $LOGPATH
-
-kill -USR1 `cat /usr/local/nginx/logs/nginx.pid`
+if (条件) {}    # 注意空格不能少
+set             # 设置变量
+return          # 返回状态码
+break           # 跳出rewrite
+rewrite         # 正式重写
 ```
 
-让该shell每分钟执行一次（生产环境每天执行一次或者按需求执行），命令行输入以下命令：
-```
-crontab -e 
+条件写法：
+- = 判断相等，用于字符串比较
+- ~ 用来正则匹配，不区分大小写
+- ~*用来正则匹配，区分大小写
+- -f -d -e 依次判断是否为文件、是否为目录、是否存在
 
-# 添加以下内容
-*/1 * * * * sh /usr/local/nginx/runlog.sh
 ```
+# 案例一：禁止某个ip访问
+location / {
+    if ($remote_addr = 192.168.1.100) {
+        return 403
+    }
+    root html;
+    index index.html;
+}
+
+# 案例二：正则匹配-不允许IE访问
+location / {
+    if ($http_user_agent ~ MSIE) {
+        rewrite ^.*$ 503.html;
+        break;                          # 没有break会循环重定向
+    }
+    root html;
+    index index.html;
+}
+```
+
+## 四 gzip压缩
+
+常用参数：
+```
+gzip on|off                 # 是否开启
+gzip_buffers 324K|168K      # 缓冲，压缩在内存中缓冲几块，每块多大
+gzip_comp_level [1-9]       # 压缩级别（越高，压缩的越小，也越浪费CPU资源），推荐6
+gzip_disable                # 正则匹配不压缩uri
+gzip_min_length 200         # 小于多少长度不再压缩
+gzip_proxied                # 设置请求者代理服务器该如何缓存内容
+```
+注意：图片、mp3这样的二进制文件不必压缩，一般使用CND缓存，且压缩率很低。  
+
