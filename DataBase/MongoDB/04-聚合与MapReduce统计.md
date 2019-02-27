@@ -65,8 +65,25 @@ db.stu.aggregate([
 ])
 ```
 ## 二 MapReduce
+
 #### 2.1 MapReduce简介
-MapReduce相当于关系型数据库中的`group by`，使用MapReduce统计需要调用Map函数和Reduce函数，Map函数会调用emit(key,value)方法，此方法可以遍历集合中的所有记录，然后将key和value传递给reduce函数进行处理。MapReduce统计可以通过db.runCommand或者mapReduce命令执行，所以Map函数和Reduce函数可以使用JS来实现：
+
+MapReduce相当于关系型数据库中的`group by`，使用MapReduce统计需要调用Map函数和Reduce函数，Map函数会调用emit(key,value)方法，此方法可以遍历集合中的所有记录，然后将key和value传递给reduce函数进行处理。  
+
+MapReduce最优秀的地方在于能够依据指定的规则自动分割任务，分发到不同的服务器中执行，每台计算机都完成一部分，然后再讲结果合并为最终结果。 
+
+现实中的案例解释：假如军训时教官需要知道面前才加军训的学生数量。  
+```
+方案一：派一个学生去一个一个数人数，这种方式类似单机单线程
+方案二：派多个学生去数，分别上报，类似单机多线程
+方案三：教官指定规则，所有学生按照自己的班级站在一起，每班学生数上报给一个同学，这个同学再对每个班级的报数进行汇总，类似MapReduce。
+```
+从三种方法可以看出，当人数越来越多时，MapReduce的效率就会越来越高。  
+MapReduce主要通过map、shuffle、reduce三个过程来运算，按照班级集中在一起，就是map，在map时，分别要输入key，value，ke是映射规则，即班级名，value就是这个班级的人数，把每个班级的人数收集起来就是shuffle的过程。map的输出之后就到了shuffle流程，该部分由Mongo自动完成，所以我们只需要书写map和reduce即可。shuffle会对map的输出部分进行洗牌，通过key进行分组获得一个List：
+![](/images/sql/mongo01.png)
+shuffle洗牌后的输出会作为，reduce接着对数据进行业务逻辑操作，即对上述结果进行化简，相加。
+
+MapReduce统计可以通过db.runCommand或者mapReduce命令执行，所以Map函数和Reduce函数可以使用JS来实现：
 ```
 db.runCommand(
     {
@@ -90,3 +107,4 @@ function(k,v){
     return x;
 }
 ```
+MapReduce擅长处理大数据量的数据，使用MapReduce分布式处理一般是快于单机多线程处理
