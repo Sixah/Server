@@ -66,5 +66,6 @@ WiredTiger引擎主要特点是高性能写入、支持压缩、支持文档级�
 由于新的压缩机制（块压缩算法、前缀压缩算法和Snappy压缩库），WiredTiger引擎存储成本只有MMAP1的10%-30%，比如存储100G数据，WiredTiger只会占用30G左右磁盘空间。  
 
 #### 2.4 In-Memory引擎
+
 MMAP1和WiredTiger都是持久化存储数据，即数据会被刷新保存到磁盘，断电后数据不会丢失。In-Memory引擎被启用后，Mongo基本成为了一个内存数据库。
 
