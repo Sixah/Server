@@ -112,6 +112,21 @@ journal=true #每次写入会记录一条操作日志（通过journal可以重�
 
 ## 三 MongoDB基本使用
 
+#### 3.0 MongoDB数据库目录
+
+- bsondump      bson转换工具
+- mongodump     逻辑备份工具
+- mongorestore  逻辑恢复工具
+- mongoexport   数据导出工具
+- mongoimport   数据导入工具
+- mongofiles    GridFS文件工具
+- mongooplog    日志复制工具
+- mongoperf     性能检查工具
+- mongos        分片路由工具
+- mongostat     状态监控工具
+- mongotop      读写监控工具     
+
+
 #### 3.1 MongoDB数据库的组成
 
 MongoDB数据逻辑结构：  
