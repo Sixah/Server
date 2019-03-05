@@ -40,7 +40,7 @@ Mongo的版本号中3.4.2中第二个数4如果是偶数，代表稳定版，推
 安装：
 tar -zxvf mongodb-linux-x86_64-4.0.6.tgz
 mv mongodb-linux-x86_64-4.0.6 /usr/local/mongodb
-vim /etc/profile
+vim /etc/profile                    # 只想在当前账户下，可编辑用户目录下的.bashprofile
 export PATH=/usr/local/mongodb/bin:$PATH
 
 配置数据目录：
@@ -109,6 +109,15 @@ maxConns=100 #最大同时连接数  
 noauth=true #不启用验证  
 journal=true #每次写入会记录一条操作日志（通过journal可以重新构造出写入的数据）
 ```
+
+#### 2.6 开机启动
+
+使用yum安装的mongodb已经注册为系统服务，直接支持开机启动。  
+
+如果是解压包安装的MongoDB需要在/etc/init.d目录下创建service脚本才能注册为服务，以实现开机启动。  
+#### 2.7 错误解决
+
+MongoDB未正常关闭，可能会无法再次启动，可以删除data目录下的mongod.lock文件。
 
 ## 三 MongoDB基本使用
 
