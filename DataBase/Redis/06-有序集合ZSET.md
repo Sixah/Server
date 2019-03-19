@@ -17,8 +17,15 @@ ZSCORE key memeber                                  # 返回成员的member分�
 ZRANGE key start end [WITHSCORES]                   # 返回有序集合中排名介于start和end之间的成员，如果给定了可选项，那么命令会将成员的分值也一并返回
 
 # 范围类型数据操作
+ZREVRANK key member                                             # 返回有序集合成员member的排名，按照分值从大到小
+ZREVRANGE key start end [WITHSCORES]                            # 返回有序集合给定排名范围内的成员，按照分值从大到小
+ZRANGBYSCORE key min max [WITHSCORES] [LIMIT offset count]      # 返回有序集合中分值介于min和max之间的所有成员
+ZREVRANGBYSCORE key max in [WITHSCORES] [LIMIT offset count]    # 返回有序集合中分值介于min和max之间的所有成员，并按照分值从大到小返回    
+ZREMRANGBYRANK key start end                                    # 移除有序集合中排名介于start和end之间的所有成员
+ZREMRANGEBYSCORE key min max                                    # 移除有序集合中分值介于min和max之间的所有成员
 
-
-# 集合间操作命令
+# 集合间操作
+ZINTERSTORE dest-key count key [key...]                         # 交集 
+ZUNIONSTORE dest-key count ke [key...]                          # 并集    
 
 ```
