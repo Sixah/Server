@@ -17,12 +17,10 @@ yum install -y cmake bison bison-devel libaio-devel gcc gcc-c++  ncurses-devel
 2 下载源码
 ```
 # 下载mysql
-下载地址：https://dev.mysql.com/downloads/mysql/               # 选择5.7，再在底部选择Linux-Generic（一般选择64位）
-在Select Operationg System中选择Source Code；
-在下面的Select OS Version选择Generic Linux(Architecture Independent)；
-然后再下面的部分可以看到Compressed TAR Archive，单击后面的Download；
 
-当然也可以在linux上直接下载：
+# 下载方式一：前往https://dev.mysql.com/downloads/mysql/ ，选择5.7，再在底部选择Source Code，再选择Generic Linux(Architecture Independent)，最后选择Compressed TAR Archive
+
+# 下载方式二：linux上直接下载
 cd /usr/local/src
 wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.25.tar.gz
 
@@ -34,6 +32,7 @@ wget --no-check-certificate http://sourceforge.net/projects/boost/files/boost/1.
 3 解压并编译
 ```
 # 解压并移动boost
+cd /usr/local/src
 tar -zxvf  mysql-5.7.25.tar.gz 
 mv boost_1_59_0.tar.gz mysql-5.7.25         # 将boost的压缩包移动至解压后的源文件目录内
 
@@ -61,7 +60,6 @@ cmake .. -DBUILD_CONFIG=mysql_release \
 -DCOMPILATION_COMMENT="MySQL Server (GPL)" \
 -DWITH_DEBUG=OFF \
 -DWITH_BOOST=..
-
 
 # 开始编译，出现 Linking CXX shared module udf_example.so 则编译完成
 make
