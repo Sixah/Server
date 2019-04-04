@@ -115,7 +115,6 @@ yum install -y cmake bison bison-devel libaio-devel gcc gcc-c++  ncurses-devel
 # 下载方式一：前往https://dev.mysql.com/downloads/mysql/ ，选择5.7，再在底部选择Source Code，再选择Generic Linux(Architecture Independent)，最后选择Compressed TAR Archive
 
 # 下载方式二：linux上直接下载
-cd /usr/local/src
 wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.25.tar.gz
 ```
 
@@ -127,14 +126,7 @@ useradd -s /bin/bash -m -g mysql mysql
 
 # 创建mysql数据
 mkdir -p /data/mysql/data               # 数据文件目录
-mkdir -p /data/mysql/logs               # 日志文件目录(error log+general log+slow log)
-mkdir -p /data/mysql/temp               # 临时文件目录
-
-mkdir -p /data/mysql/bin_log            # 二进制日志目录
-mkdir -p /data/mysql/innodb_log         # InnoDB重做日志目录
-mkdir -p /data/mysql/innodb_ts          # InnoDB共享表空间目录
-mkdir -p /data/mysql/relay_log          # InnoDB中继日志目录
-mkdir -p /data/mysql/undo_log           # InnoDB回滚日志目录
+mkdir -p /data/mysql/logs               # 日志文件目录
 
 # 设置数据目录权限
 chown -R mysql:mysql /data/mysql/
@@ -142,30 +134,34 @@ chown -R mysql:mysql /data/mysql/
 
 3 解压并编译 
 ```
-
-cd /usr/local/src/mysql5.7.25
+tar zxvf mysql-5.7.25.tar.gz
+cd mysql-5.7.25
+wget --no-check-certificate http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
 mkdir configure
 cd configure
 
 # 出现 -- Configuring done -- Generating done 则成功
 
-cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \
--DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
--DMYSQL_DATADIR=/data/mysql/data \
--DSYSCONFDIR=/etc/my.cnf \
--DWITH_INNOBASE_STORAGE_ENGINE=1  \
--DWITH_PARTITION_STORAGE_ENGINE=1 \
+cmake .. -DBUILD_CONFIG=mysql_release \
+-DINSTALL_LAYOUT=STANDALONE \
+-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+-DENABLE_DTRACE=OFF \
+-DWITH_EMBEDDED_SERVER=OFF \
+-DWITH_INNODB_MEMCACHED=ON \
+-DWITH_SSL=bundled \
+-DWITH_ZLIB=system \
+-DWITH_PAM=ON \
+-DCMAKE_INSTALL_PREFIX=/usr/local/mysql/ \
+-DINSTALL_PLUGINDIR="/usr/local/mysql/lib/plugin" \
 -DDEFAULT_CHARSET=utf8 \
 -DDEFAULT_COLLATION=utf8_general_ci \
--DENABLE_DEBUG_SYNC=0 \
--DENABLED_LOCAL_INFILE=1 \
--DENABLED_PROFILING=1 \
--DMYSQL_TCP_PORT=3306 \
--DMYSQL_UNIX_ADDR=/data/mysql/mysql.sock \
--DWITH_DEBUG=0 -DWITH_SSL=yes \
--DWITH_SAFEMALLOC=OFF \
--DDOWNLOAD_BOOST=1 \
--DWITH_BOOST=/usr/local/boost\ ..
+-DWITH_EDITLINE=bundled \
+-DFEATURE_SET=community \
+-DCOMPILATION_COMMENT="MySQL Server (GPL)" \
+-DWITH_DEBUG=OFF \
+-DWITH_BOOST=..
+
+
 
 # 编译安装
 make 
@@ -193,7 +189,6 @@ port = 3306
 
 basedir = /usr/local/mysql
 datadir = /data/mysql/data
-tmpdir = /data/mysql/temp
 log-error = /data/mysql/logs/error.log
 
 socket = /data/mysql/mysql.sock
@@ -211,25 +206,21 @@ chown -R mysql:mysql /etc/my.cnf
 5 初始化mysql
 ```
 cd /usr/local/mysql
-./bin/mysqld --defaults-file=/etc/my.cnf --initialize --basedir=/usr/local/mysql --datadir=/data/mysql/mysql3306/mydata --user=mysql
+./bin/mysqld --defaults-file=/etc/my.cnf --initialize --basedir=/usr/local/mysql --datadir=/data/mysql/data --user=mysql
+
+ll /data/mysql/data/        # 查看数据文件是否生成
+ll /data/mysql/logs/         # 查看日志文件是否生成
 ```
 
-6 初始化数据库
-```
-/var/mysql/bin/mysqld  --initialize --user=mysql
-ll /data/mysqldata/        # 查看数据文件是否生成
-ll /data/mysqllog/         # 查看日志文件是否生成
-```
-
-7 配置启动文件及环境
+6 配置启动文件及环境
 ```
 # 复制配置
-cp /var/mysql/support-files/mysql.server /etc/init.d/mysqld
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
 vim /etc/init.d/mysqld
 
 # 找到 basedir=  datadir=  修改为：
-basedir=/var/mysql/
-datadir=/data/mysql_data
+basedir=/usr/local/mysql/
+datadir=/data/mysql/data/
 ```
 
 8 启动mysql
@@ -237,19 +228,8 @@ datadir=/data/mysql_data
 # 启动
 /etc/init.d/mysqld start            # 也可以使用 systemctl start mysqld 此时不会有任何提示
 
-# 如果遇到错误：
-mkdir -p /var/log/mariadb/
-touch /var/log/mariadb/mariadb.log
-chmod -R 777 /var/log/mariadb/mariadb.log
-
-如果出现：Unit not found，则解决方法如下：
-yum install -y mariadb-server       # 首先需要安装mariadb-server
-systemctl start mariadb.service     # 启动服务
-systemctl enable mariadb.service    # 添加到开机启动
-
-mysql_sceure_installation           # 进行一些安全设置
-mysql -u root -p                    # 测试
-
+ # 测试
+mysql -u root -p                   
 ```
 
 9 设置mysql开机自启动
