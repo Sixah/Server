@@ -33,7 +33,9 @@ http {                                      # 配置虚拟主机，一般配置�
 }
 ```
 
-该段配置的常见解读是：每个server对应一个域名，有多少域名，就有多少个server，比如www.test.com,news.test.com,shop.test.com,此时nginx需要配置三个server。
+该段配置的常见解读是：
+- 每个server对应一个域名，有多少域名，就有多少个server，比如www.test.com,news.test.com,shop.test.com,此时nginx需要配置三个server。
+- 一个server下有多个location，负责匹配url字符串
 
 ## 二 虚拟主机配置
 
@@ -126,9 +128,10 @@ http {
 #### 3.1 location简介
 
 location会根据uri进行不同的定位。语法可以分为三类：
-- location = patt {}    # 精准匹配
+- location = patt {}    # 精准匹配，匹配成功立则停止搜索，立即处理请求
 - location patt {}      # 一般匹配
 - location  ~ patt {}   # 正则匹配
+- location  ^~ patt {}   # 正则匹配，匹配成功后立即处理请求，而不再使用location块中的正则匹配，比如转码的地址/html/%20/data，在遇到配置`^~/html//data`时匹配成功
 
 匹配顺序：首先看有没有精准匹配，如果有，则立即解析，停止继续查找，没有则依次按照一般匹配，正则匹配类推。  
 

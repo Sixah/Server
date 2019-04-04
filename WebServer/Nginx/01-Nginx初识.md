@@ -90,6 +90,8 @@ sbin    命令目录
 
 ## 四 Nginx启动与关闭
 
+Nginx服务在运行时，会保持一个主进程和一个或多个工作进程，通过给Nginx服务的主进程发送信号就可以控制服务的启动停止了。
+
 ```
 # 启动
 cd /usr/local/nginx/sbin
@@ -97,6 +99,8 @@ cd /usr/local/nginx/sbin
 
 # 查看Nginx运行情况，如果服务器上配置了外网访问，此时可以在外网访问Nginx默认页面了
 ps aux|grep nginx                               # 此时可以看到Nginx拥有主进程和工作进程
+cat /usr/local/nginx/logs/nginx.pid             # 该方法也可以查看nginx主进程
+
 注意：Nginx的主进程（master）不负责处理网络请求，负责生成和管理多个子进程，子进程（work）用于处理网络请求。
 
 # 如果出现80端口被占用的情况，解决办法
