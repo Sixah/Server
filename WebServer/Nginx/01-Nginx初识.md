@@ -1,8 +1,20 @@
 ## 一 Nginx介绍
-Nginx最初是为了设计成为一个HTTP服务器，用来解决C10K问题。  
-关于C10K:最初的服务器是基于进程/线程模型。新到来一个TCP连接，就需要分配一个进程。假如有C10K，就需要创建1W个进程，可想而知单机是无法承受的。
+
+#### 1.1 常见Web服务器
+
+传统Web服务器：
+- Apache服务器：使用以进程为基础的结构，开支消耗很大，在多处理器环境中性能会有所下降，所以扩容Apache站点时常见的做法是增加服务器、扩充集群而不是增加处理器。 
+- Tomcat：专门用于Java的JSP和Servlet的轻量级服务器软件，无法满足复杂业务场景需求，但是由于自用资源帝，安装部署方便，也有一定的占有率。
+- Nginx最初是为了设计成为一个HTTP服务器，用来解决C10K问题（最初的服务器是基于进程/线程模型。新到来一个TCP连接，就需要分配一个进程。假如有C10K，就需要创建1W个进程，可想而知单机是无法承受的）。  
+
+#### 1.2 Nginx功能
+
+Nginx现在的功能十分强大，可以作为HTTP服务器，反向代理服务器，缓存加速访问，邮件服务器，支持FastCGI、SSL、Virtual Host、URL Rewrite、Gzip等常见功能，并支持第三方模块扩展。  
+
 ## 二 Nginx安装
+
 #### 2.1 win安装
+
 nginx的win安装包是绿色的，解压就可以直接使用：
 ```
 start .\nginx.exe               # 启动后查看进程管理器中是否有nginx进程，或者访问127.0.0.1
@@ -16,6 +28,7 @@ nginx -s reload                //重新加载nginx
 nginx -s quit                  //退出nginx
 ```
 #### 2.2 Linux源码安装
+
 CentOS安装：
 ```
 # 安装依赖
@@ -48,7 +61,9 @@ make && make install
 | --group=`<group>` | worker进程运行的组 |
 | --with-file-aio | 为FreeBSD4.3+和Linux2.6.22+系统启动异步I/O |
 | --with-debug | 启用调试日志，生产环境不推荐 |
+
 #### 2.3 配置邮件代理安装
+
 推荐的邮件代理配置为：
 ```
 ./configure --with-mail --with-mail_ssl_module --with-openssl=${BUILD_DIR}/openssl-1.0.1p
@@ -64,6 +79,7 @@ make && make install
 | --without-http | 禁用http模块，只使用mail | 
 
 ## 三 Nginx文件目录
+
 在Nginx安装目录中，存在四个目录：
 ```
 conf    配置文件目录
@@ -71,7 +87,9 @@ html    静态文件目录
 logs    日志文件目录
 sbin    命令目录
 ```
+
 ## 四 Nginx启动与关闭
+
 ```
 # 启动
 cd /usr/local/nginx/sbin
@@ -88,7 +106,9 @@ kill -9 (PID)
 # 关闭Nginx
 kill -INT PID                                   # 此处PID为Nginx的master进程PID
 ```
+
 ## 五 信号量
+
 在关闭Nginx时，我们使用了-INT，还有其他的信号量：
 ```
 TERM或者INT     快速关闭
