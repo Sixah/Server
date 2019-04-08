@@ -1,6 +1,6 @@
 ## 一 Nginx配置文件
 
-#### 1.1 核心配置nginx.conf
+#### 1.1 核心配置nginx.conf简介
 
 Nginx的核心配置文件位于`/conf/nginx.conf` ,常见设置有：
 
@@ -36,6 +36,40 @@ http {                                      # 配置虚拟主机，一般配置�
 该段配置的常见解读是：
 - 每个server对应一个域名，有多少域名，就有多少个server，比如www.test.com,news.test.com,shop.test.com,此时nginx需要配置三个server。
 - 一个server下有多个location，负责匹配url字符串
+
+#### 1.2 常见指令
+
+- root:  表示资源根目录，可以使用Nginx大多变量（除了`$document_root`,`$realpath_root`）,该指令可以应用于http、server、location中。  
+- index: 默认首页  
+- error_page code 错误页面地址: 错误页面  
+- allow: 语法结构为 `allow address | CIDR | all`，用于设置允许客户端访问的IP，不支持同时设置多个，如果要设置多个，需要重复使用allow指令，CIDR表示允许客户端访问的CIDR地址，如：202.80.18.23/25，all代表允许所有。
+- deny：用法同allow，表示禁止特定客户端和地址访问
+
+注意：nginx在解析时，会依次解析，直到遇到自己匹配的才会停止，如下所示，192.168.1.0/24客户端可以访问。
+```
+location / {
+    deny 192.168.1.1;       # 禁止访问
+    allow 192.168.1.0;      # 允许访问
+    deny all;               # 禁止所有
+}
+```
+
+#### 1.3 基于密码配置Nginx访问权限
+
+Nginx还支持基于HTTPBasic Authentication协议的认证。该协议是一种HTTP性质的认证办法，需要识别用户名和密码，认证书黑白的客户端不拥有访问Nginx服务器的权限，该功能由ngx_http_auth_basic_module模块支持。
+
+```
+auth_basic string | off;     # string是开启认证，并配置验证时的指示信息，off 为关闭
+auth_basic_user_file file;   # 用于设置包含用户名和密码信息的绝对文件路径
+
+# 密码文件格式：
+name1:password1
+name2:password2:comment
+name3:password
+
+# 密码支持crypt()函数加密，Linux上使用htpasswd命令
+# htpasswd -c -d /nginx/conf/pass_file username
+```
 
 ## 二 虚拟主机配置
 
@@ -123,7 +157,7 @@ http {
 }
 ```
 
-## 三 location写法
+## 三 虚拟主机中的location
 
 #### 3.1 location简介
 
@@ -138,24 +172,24 @@ location会根据uri进行不同的定位。语法可以分为三类：
 ```
 # 精准匹配
 location = / {
-    root    html
-    index1.html
+    root    html        
+    index   index1.html
 }
 
 # 一般匹配
 location /index.html {
     root    html
-    index2.html
+    index   index2.html
 }
 
 # 正则匹配
 location ~ image {
     root    /image
-    index3.html
+    index   index3.html
 }
 ```
 
-## 三 rewrite 重写
+#### 3.2 rewrite 重写
 
 重写常用命令：
 ```
@@ -164,6 +198,7 @@ set             # 设置变量
 return          # 返回状态码
 break           # 跳出rewrite
 rewrite         # 正式重写
+alias           # 重新指定目录
 ```
 
 条件写法：
@@ -192,6 +227,8 @@ location / {
     index index.html;
 }
 ```
+
+#### 3.3 
 
 ## 四 gzip压缩
 
