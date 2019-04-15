@@ -42,4 +42,4 @@ RPOPLPUSH source-key dest-key                # 从source-key列表弹出最右�
 BRPOPLPUSH source-key dest-key timeout       # 作用同 RPOPLPUSH ，但是如果source-key为空，那么在timeout秒内阻塞并等待可弹出元素出现
 ```
 
-实战：当列表类型作为队列时，source 和destination如果相同，RPOPLPUSH 命令会不断的将队尾的元素移动到队首。例如使用该特性实现一个网站监控系统：对垒存储需要监控的网站，程序不断使用RPOPLPUSH 循环取出一个网址来测试可用性，好处是在于在程序执行过程中仍然可以不断的向网址列表中加入新网址，整个系统易扩展，允许多个客户端同时处理队列。
+实战：当列表类型作为队列时，source 和destination如果相同，RPOPLPUSH 命令会不断的将队尾的元素移动到队首。例如使用该特性实现一个网站监控系统：存储需要监控的网站，程序不断使用RPOPLPUSH，循环取出一个网址来测试可用性，好处是在于在程序执行过程中仍然可以不断的向网址列表中加入新网址，整个系统易扩展，允许多个客户端同时处理队列。
