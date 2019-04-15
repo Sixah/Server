@@ -2,9 +2,19 @@
 
 #### 1.1 Redis简介
 
-Redis（Remote Dictionary Server）是使用C语言编写的开源高性能键值存储数据库。Redis基于内存存储，又具备持久化功能，是当前最热门的NoSQL数据库之一。  
+Redis（Remote Dictionary Server）是使用C语言编写的开源高性能键值存储数据库。  
 
-Redis提供了5种数据结构，并具备复制、持久化、客户端分片功能，实用性上原生memcache。使用Redis可以很方便的实现每秒处理上百万次请求。  
+Redis基于内存存储，又具备持久化功能，是当前最热门的NoSQL数据库之一，经常用来处理缓存、购物车、消息队列、任务队列。  
+
+Redis提供了多种数据结构，并具备复制、持久化、客户端分片功能。
+
+使用Redis可以很方便的实现每秒处理上百万次请求。  
+
+Redis优势：
+- 性能极高：每秒读速度达11万次，写速度8万1千次；
+- 数据类型丰富：支持二进制的Strings,Lists,Hashes,Sets等；
+- 原子操作：redis的操作都是原子性的，同时支持对几个操作全并后的原子性执行；
+- 特性丰富：支持发布订阅、通知、key过期、持久化等特性；
 
 5种数据结构：
 | 数据结构 | 结构存储的值 | 结构读写能力 |
@@ -27,12 +37,11 @@ Redis提供了5种数据结构，并具备复制、持久化、客户端分片�
 redis解压后就可以直接使用了（不像Nginx等Linux软件需要configure，redis官方已经配置过了）。
 ```
 # 下载并加压redis，进入redis目录
-make            # 编译
-make test       # 如果提示需要tcl库，需要安装tcl
-make PREFIX=/usr/local/redis install    # 执行安装
-
+make                                        # 编译
+make test                                   # 如果提示需要tcl库，需要安装tcl
+make PREFIX=/usr/local/redis install        # 执行安装
 cd /usr/local/redis
-cp ~/src/redis-5.0/redis.conf ./   # 复制一份配置文件到redis下
+cp ~/src/redis-5.0/redis.conf ./            # 复制一份配置文件到redis下
 ```
 
 #### 1.3 启动 
