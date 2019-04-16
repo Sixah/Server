@@ -11,23 +11,33 @@ hash一般可以理解为用来存储对象，将对象的键值一起做了存�
 ## 二 常用命令 
 
 ```
-# 散列键操作
-HSET                                # 设置散列键值对
-HGETALL                             # 获取指定散列键的值
-HLEN key                            # 获取散列包含的键值对数量
+# 设置
+HSET key field value                # 设置单个属性：hset person name 'lisi'
+HMSET key field value field value.. # 设置多个属性
+HSETNX	key field	value			# 与HSET一致，但是如果字段存在，则不执行任何操
 
-# 散列的键值操作
-HMGET key k [k...]                  # 获取散列中一个或者多个键k的值
-HMSET key k v [k v...]              # 为散列内一个或多个键设置值
-HDEL key k [k]                      # 如果给定键存在于散列里面，那么移除这个键
+# 获取
+HGET key field                      # 获取一个属性的值
+HMGET key field field ...			# 获取多个属性的值
+HGETALL key                         # 获取所有属性和值
+HLEN key                            # 返回包含属性的个数							
+HKEYS key						    # 获取所有属性
+HVALS key						    # 获取所有属性的值
+
+# 删除
+HDEL key filed [filed]...           # 如果给定键存在,那么移除这个键,返回值是删除的字段个数
 
 # 散列高级特性
-HEXISTS key k                       # 检查散列key内指定的键k是否存在
-HKEYS key                           # 获取散列key内所有的键
-HVALS key                           # 获取散列key包含的所有值
-HGETALL key                         # 获取散列key包含的所有键值对
-HINCRBY key k increment             # 将k值增加整数increment
-HINCRBYFLOAT key k increment        # 将k值增加浮点数increment
+HEXISTS key field                   # 判断属性是否存在，存在返回1，否则返回0，键不存在也返回0
+HINCRBY key field increment         # 将field值增加整数increment
+HINCRBYFLOAT key field increment    # 将field值增加浮点数increment
+# 案例
+hincrby person score 60             # 不存在score，则创建，且执行命令前的值为0，命令返回值是增值后的字段值。
 ```
 
-注意事项：如果散列非常大，可以先使用HKEYS获取所有的键，然后通过只获取必要的值来减少需要传输的数据量。
+注意事项：
+- 如果散列非常大，可以先使用HKEYS获取所有的键，然后通过只获取必要的值来减少需要传输的数据量。
+- HSET命令不区分插入和更新，修改数据时无需事先判断字段是否存在来决定是更新还是插入。执行插入返回1，执行更新返回0，当然如果键不存在，则会创建键。
+注意：在redis中，键的类型和命令有关，SET创建的键是字符串类型，HSET命令创建的hash类型，如果使用一种数据类型的命令操作另外一个数据类型的键，会提示错误：
+`ERR Operation against a key holding the wrong kind of value`
+
