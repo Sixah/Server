@@ -1,26 +1,25 @@
-## 一 MySQL简介
+## win安装
 
-## 二 MySQL安装
+## mac安装
 
-#### 2.1 win安装
-
-#### 2.2 mac安装
-
-#### 2.3 Linux安装mysql方式
+## Linux安装mysql方式
 
 安装方式：
 - 源码安装： 高级运维安装方式，需要编译，且可以自定义配置和模块
 - 二进制安装：较为高效，安装文件体积较大，因为是已经编译好的文件，安装后会提供默认的mysql目录
 - yum安装：更简单的二进制安装方式，适合对数据库要求不太高的场合，例如并发不大，公司内部，企业内部的一些应用场景
 
-#### 2.4 CentOS7 二进制方式安装 mysql5.7
+安装原则：  
+源码安装虽然提供了高度定制性，但是当前的互联网企业都是集群架构，上百集群中使用源码方式安装mysql显然压力很大，推荐使用二进制方式安装
+
+####  CentOS7 二进制方式安装 mysql5.7
 
 0 准备工作
 ```
 # 关闭防火墙
-systemctl stop firewalld.service #停止firewall
-systemctl disable firewalld.service #禁止firewall开机启动
-firewall-cmd --state #查看默认防火墙状态（关闭后显示notrunning，开启后显示running）
+systemctl stop firewalld.service        # 停止firewall
+systemctl disable firewalld.service     # 禁止firewall开机启动
+firewall-cmd --state                    # 查看默认防火墙状态,notrunning为关闭
 
 # 删除mysql，mariadb
 rpm -qa|grep mariadb
@@ -34,12 +33,13 @@ rm /etc/init.d/mysqld
 1 下载并上传安装包
 ```
 选择：MySQL Community Server 5.7 -> Linux-Generic 64 -> Compressed TAR Archive
+或者：wget https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz
 ```
 
 2 解压
 ```
 tar zxvf mysql-5.7.25-linux-glibc2.12-x86_64.tar.gz
-mv mysql-5.7.25 /usr/local/mysql
+mv mysql-5.7.25-linux-glibc2.12-x86_64 /usr/local/mysql
 ```
 
 3 创建用户
@@ -52,7 +52,6 @@ useradd -r -g mysql -s /bin/false mysql         # 创建一个不可登陆的mys
 ```
 cd /usr/local/mysql
 mkdir data
-mkdir mysql-files
 chown -R mysql.mysql .
 ```
 
@@ -60,6 +59,7 @@ chown -R mysql.mysql .
 ```
 /usr/local/mysql/bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
 ```
+注意：此时会生成一个临时密码，需要记录
 
 6 建立配置
 ```
@@ -74,24 +74,37 @@ datadir=/usr/local/mysql/data
 ```
 # 启动方式一（不推荐） 手动启动
 /usr/local/mysql/bin/mysqld_safe --user=mysql &
-./mysql -uroot -p                                   # 输入刚才记录的密码即可登录
 
 # 启动方式二（推荐） 并设置为开机启动
-cd /usr/local/mysql
-cp support-files/mysql.server /etc/init.d/mysqld
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
 chmod a+x /etc/init.d/mysqld                        
 chkconfig --add /etc/init.d/mysqld
 chkconfig mysqld on
 service mysqld start                                # 如果之前启动过，使用 restart
 ```
 
-8 重置密码
+8 本地连接
 ```
-/usr/local/mysql/bin/mysql -uroot -p                # 输入刚才记录的密码即可登录
-alter user root@'localhost' identified by '(Test123)'; # 密码被修改为(Test123)
+/usr/local/mysql/bin/mysql -uroot -p                # 输入刚才保存的密码
 ```
 
-#### 2.5 CentOS7 源码方式安装 mysql5.7
+9 重置密码
+```
+# 本地连接后执行：
+alter user root@'localhost' identified by '(test123)'; # 密码被修改为：(test123)
+```
+
+10 授权远程访问
+```
+grant all privileges on *.* to root@'%' identified by '123456';
+flush privileges;
+```
+解释：
+- `*.*`分别代表所有的数据库名和所有的数据库表
+- root@’%’中的root代表用户名，%代表ip地址，%也可以指定具体的ip，如：root@localhost,root@192.168.10.129
+- flush是授权刷新命令；
+
+#### CentOS7 源码方式安装 mysql5.7
 
 0 准备工作
 ```
