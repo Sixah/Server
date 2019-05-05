@@ -1,31 +1,76 @@
-## 一 MySQL简介
+## 一 MySQL介绍
 
-#### 1.1 MySQL简单介绍
+#### 1.1 MySQL简介
 
-#### 1.2 MySQL语法
+#### 1.2 MySQL连接
+
+连接mysql命令
+```
+mysql -uroot -p								# -u后是数据库用户 -p表示需要输入密码，
+mysql -h 192.168.5.116 -P 3306 -u root -p123456				# 远程连接
+```
+连接成功后，会提示`connection id`，该id也是连接的数量，每个新连接都会+1。
+
+#### 1.3 MySQL的sql语法规范
 
 具体的sql语句中，可以使用 ; \g \G 三种形式表示语句结束，前两个表达的意思一样，只是结束标志，第三个表示格式化显示结果。  
 
-SQL语言一共分为4大类：
-- DDL：数据定义语言
-- DML：数据操纵语言
-- DQL：数据查询语言
-- DCL：数据控制语言
+sql语句不区分大小写，但是推荐sql中的关键字都使用大写。  
 
-#### 1.3 MySQL存储引擎
 
-常见的存储引擎有：
-- InnoDB：支持事务，所以占用空间大，适合频繁更新、删除的数据库
-- MyISAM：不支持事务、外键，所以访问速度快
-- MEMORY：使用内存存储数据，访问速度快，适合数据小、速度要求快的数据库
+## 二 DDL与DML语句
 
-对引擎的查询与设置语句：
+#### 2.1 常见DDL语句
+
 ```
-show engines;                               # 查看所有引擎
-show variables like '%storage_engine%';     # 查看默认引擎	
+create database test;						# 创建一个名为test的数据库
+show databases;								# 查询系统中有哪些已创建的数据库
+
+use test;									# 使用数据库test
+show tables;								# 展示当前数据库中的所有表
+create table user(							# 创建一个user表，字段有name age
+	name varchar(10),
+	age int(2)
+);	
+desc user;									# 查看user表的表结构			
+show create table user;						# 查看user表建表语句
+
+drop database test;							# 删除数据库
+drop table user;							# 删除表
+
+alter table user rename users;				# 修改表名
+alter table user add colum sex int(2);		# 增加字段
+alter table user drop colum sex;			# 删除字段
+alter table user modify name varchar(20);	# 修改字段定义
+alter table user change name username varchar(20);	# 修改字段名，change也可以修改定义
+
 ```
 
-修改默认引擎:在my.ini配置文件中修改：default-storage-engine 
+#### 2.2 常见DML语句
+
+```
+# 插入记录
+insert into user(name) values('lisi');		# 未声明字段使用默认值
+insert into user values('zs', 20);			# 依次赋值
+
+# 多行插入
+insert into user(name,age) values ('lisi',30),('zs',20);
+
+# 更新记录
+update user set age=30 where name='lisi';	# 将名字为lisi的人age设置为20
+
+# 更新多表记录
+update user u, order o set u.update_time=o.create_time where u.uid=o.uid;
+
+# 删除记录
+delete from user where name='lisi';
+
+# 删除夺标记录
+delete u,o from user u, order o where u.uid=o.uid and u.uid=100071;
+
+# 查询
+select * from user;
+```
 
 ## 二 MySQL数据类型
 
@@ -118,85 +163,3 @@ create table teacher(
 );
 ```
 
-## 四 SQL语言
-
-#### 3.1 数据控制语言 DCL
-
-#### 3.2 数据定义语言 DDL
-
-#### 3.3 数据操纵语言 DML
-
-增加
-全列插入：insert into 表名 values(值1,值2...)
-缺省插入：insert into 表名(列1,...) values(值1,...)
-同时插入多条数据：
-insert into 表名 
-values(值1,值2,值3...),
-(值1,值2,值3...),
-(值1,值2,值3...),
-或者：	  insert into 表名(列1,...) values(值1,...),(值1,...)...;
-注意：自动增加约束、默认值约束的字段可以不用插入数值。
-
-插入查询语句：可以实现从一个表复制数据到另一个表
-  insert into 表名(字段1,字段2,字段3...) select ......
-
-删除
-delete from 表名 where 条件 
-逻辑删除，本质就=是修改update：alter table students add isdelete bit default 0;
-如果需要删除则：update students isdelete=1 where ...;
-
-
-修改
-update 表名 set 列1=值1,... where 条件
-
-#### 3.4 数据查询语言 DQL
-
-select * from 表名
-
-temp:
-```
-表中的数据库对象包括：列、索引、触发器。
-查看当前数据库中所有表
-show tables;
-创建表
-create table 表名(列及类型);
-create table students(
-id int auto_increment primary key not null,
-name varchar(10) not null,
-gender bit default 1,
-birthday datetime
-);
-修改表
-alter table 表名 add|change|drop 列名 类型;
-alter table students add birthday datetime;
-add	字段名 字段类型				在表的最后一个位置增加字段
-add 字段名 字段类型 first			在表的第一个位置添加字段
-add 字段名 字段类型 after 字段 	在指定字段后添加字段
-drop 字段名						删除字段
-modify 字段名 字段类型			修改字段类型
-modify 字段名1 字段类型 first|after 字段名2 修改字段顺序
-change 字段名 新字段名 字段类型	修改字段名
-change 字段名 新字段名 新字段类型 修改字段名、字段类型
-
-删除表
-drop table 表名;
-更改表名称
-rename table 原表名 to 新表名;
-查看表的创建语句
-show create table '表名';
-查看当前表中所有列：
-show columns from 表名;
-describe 表名;		//快速写法，也可以简写为：desc 表名;
-```
-
-## 五 常见问题解决
-
-#### 5.1 命令行插入中文乱码
-
-需要修改mysql配置文件并重启：
-```
-[mysql]
-default-character-set=utf8
-```
-
-注意：即使客户端、服务端都是gbk的编码，存储的时候仍然是乱码，因为数据的传输中被编译成了utf8。
